@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">小红马快速拨号</string>
+    <string name="info_about">本软件由张立军开发。任何问题email至：openplatform@sohu.com</string>
+    <string name="about">反馈</string>
+    <string name="setting">系统设置</string>
+    <string name="link_text_auto">
+    \n
+	  本软件由张立军开发。\n\n
+	邮件地址：\n
+	openplatform@sohu.com\n\n
+	新浪围脖：\n
+	http://t.sina.com.cn/redhorse4u\n\n
+	搜狐围脖：\n
+	http://t.sohu.com/legendzhang\n\n
+    </string>
+  <string name="str_button1">搜索</string> 
+  <string name="str_title">我的联系人</string>
+  <string name="str_name">姓名</string>
+  <string name="str_telephone">电话号码</string>
+ </resources>
