@@ -16,10 +16,9 @@
 	</GridView>
 	<LinearLayout android:layout_weight="1" android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="100dp" 
 		xmlns:android="http://schemas.android.com/apk/res/android" android:gravity="center" android:padding="1dip">
-		<Button android:text="微博分享"  android:layout_weight="2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/weibogrid"></Button>
+		<Button android:text="通话记录"  android:layout_weight="2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/weibogrid"></Button>
 		<Button android:text="联系人"  android:layout_weight="2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/Button01"></Button>
-		<Button android:text="号码设定" android:layout_weight="2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/Button02"></Button>
-		<Button android:text="退出" android:layout_weight="2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/Button03"></Button>
+		<Button android:text="拨号盘" android:layout_weight="2" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/Button03"></Button>
 	</LinearLayout>
 </LinearLayout>
 

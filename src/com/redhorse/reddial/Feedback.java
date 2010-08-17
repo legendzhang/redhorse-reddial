@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.method.SingleLineTransformationMethod;
 import android.util.Log;
@@ -81,8 +83,18 @@ public class Feedback extends Activity implements OnItemClickListener {
 
 	private OnClickListener SendListener = new OnClickListener() {
 		public void onClick(View v) {
-			postData(feedback.getText()
-					.toString(), "快速启动");
+			ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);  
+	        NetworkInfo networkinfo = manager.getActiveNetworkInfo();  
+	        if (networkinfo == null || !networkinfo.isAvailable()) {  
+	             // 当前网络不可用 你该干嘛干嘛
+	        	Toast.makeText(v.getContext(), 
+	            		"当前网络不可用, 请检查网络！", 
+	                    Toast.LENGTH_LONG) 
+	                 .show();
+	        } else { 	
+				postData(feedback.getText()
+						.toString(), "快速启动");
+	        }
 		}
 	};
 
