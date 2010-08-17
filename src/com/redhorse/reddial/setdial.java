@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.redhorse.reddial.reddial;
+import com.redhorse.reddial.setdial;
 import com.redhorse.reddial.R;
-import com.redhorse.reddial.reddial.AppsAdapter;
+import com.redhorse.reddial.setdial.AppsAdapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -47,7 +47,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class reddial extends Activity implements OnItemClickListener {
+public class setdial extends Activity implements OnItemClickListener {
 
 	private GridView mGrid;
 	private dbDialConfigAdapter dbStart = null;
@@ -58,10 +58,10 @@ public class reddial extends Activity implements OnItemClickListener {
 	private static final int STARTALL_REQUEST = 0;
 	private static final int STARTCONFIG_REQUEST = 1;
 	private static final int STARTWEIBO_REQUEST = 2;
+	private static final int STARTPICK_REQUEST = 3;
 
-	private final static int ITEM_ID_OPEN = 0;
+	private final static int ITEM_ID_SELECT = 0;
 	private final static int ITEM_ID_DELETE = 1;
-	private final static int ITEM_ID_EDIT = 2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,19 +96,13 @@ public class reddial extends Activity implements OnItemClickListener {
 		super.onActivityResult(requestCode, resultCode, data);
 		Intent it = new Intent();
 		switch (requestCode) {
-		case STARTCONFIG_REQUEST:
+		case STARTPICK_REQUEST:
 			switch (resultCode) {
 			case RESULT_OK:
-				Bundle b = data.getExtras();
-				String msg = b.getString("msg");
-				if (msg.equalsIgnoreCase("save")) {
-					loadApps();
-					mGrid.setAdapter(new AppsAdapter());
-				} else if (msg.equalsIgnoreCase("config")) {
-				}
+                startActivity(new Intent(Intent.ACTION_VIEW,data.getData()));  
+                Log.i("reddial",""+data.getData());  
 				break;
 			default:
-				finish();
 				break;
 			}
 			break;
@@ -154,29 +148,16 @@ public class reddial extends Activity implements OnItemClickListener {
 
 	private OnClickListener Button01Listener = new OnClickListener() {
 		public void onClick(View v) {
-	        int sdk=new Integer(Build.VERSION.SDK).intValue();          
-	        Uri uri = null;
-	        if (sdk>=5) {  
-	            try {  
-	                Class clazz=Class.forName("android.provider.ContactsContract$Contacts");  
-	                uri=(Uri)clazz.getField("CONTENT_URI").get(clazz);  
-	            }  
-	            catch (Throwable t) {  
-	                Log.e("reddial", "Exception when determining CONTENT_URI", t);  
-	            }  
-	        }  
-	        else {  
-	        	uri=Contacts.People.CONTENT_URI;  
-	        }  
-            Intent i=new Intent(Intent.ACTION_VIEW, uri);  
-            startActivityForResult(i, 1);
-            }
+			// Intent setting = new Intent();
+			// setting.setClass(reddial.this, AppAll.class);
+			// startActivityForResult(setting, STARTALL_REQUEST);
+		}
 	};
 
 	private OnClickListener Button02Listener = new OnClickListener() {
 		public void onClick(View v) {
 			Intent setting = new Intent();
-			setting.setClass(reddial.this, setdial.class);
+			setting.setClass(setdial.this, contactlist.class);
 			startActivityForResult(setting, STARTCONFIG_REQUEST);
 		}
 	};
@@ -187,17 +168,17 @@ public class reddial extends Activity implements OnItemClickListener {
 			Bundle b = new Bundle();
 			b.putString("msg", "quit");
 			i.putExtras(b);
-			reddial.this.setResult(RESULT_OK, i);
+			setdial.this.setResult(RESULT_OK, i);
 			dbStart.close();
-			reddial.this.finish();
+			setdial.this.finish();
 		}
 	};
 
 	private OnClickListener weibogridListener = new OnClickListener() {
 		public void onClick(View v) {
-			 Intent setting = new Intent();
-			 setting.setClass(reddial.this, weibo.class);
-			 startActivityForResult(setting, STARTWEIBO_REQUEST);
+			// Intent setting = new Intent();
+			// setting.setClass(reddial.this, weibo.class);
+			// startActivityForResult(setting, STARTWEIBO_REQUEST);
 		}
 	};
 
@@ -246,27 +227,39 @@ public class reddial extends Activity implements OnItemClickListener {
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		// TODO Auto-generated method stub
-		final List<String> num = new ArrayList<String>();
-		Cursor phones = getContentResolver()
-				.query(Phones.CONTENT_URI, null, 
-                        Phones.PERSON_ID + "=" + mContactID.get(position).toString(), null, null);;
-		while (phones.moveToNext()) {
-			String phoneNumber = phones.getString(phones
-					.getColumnIndex(People.NUMBER));
-			// 多个号码如何处理
-			num.add(phoneNumber);
-		}
-		phones.close();
-		
-		CharSequence[] cs = num.toArray(new CharSequence[num.size()]);
-		AlertDialog opDialog = new AlertDialog.Builder(reddial.this)
+		AlertDialog opDialog = new AlertDialog.Builder(setdial.this)
         .setTitle("选项")
-        .setItems(cs, new DialogInterface.OnClickListener() {
+        .setItems(R.array.select_dialog_items, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-            	Uri uri = Uri.parse("tel:"+num.get(which).toString());
-            	Intent it = new Intent(Intent.ACTION_CALL, uri);
-            	startActivity(it);
-           }
+                String[] items = getResources().getStringArray(R.array.select_dialog_items);
+        		switch (which) {
+        		case ITEM_ID_SELECT:
+        	        int sdk=new Integer(Build.VERSION.SDK).intValue();          
+        	        Uri uri = null;
+        	        if (sdk>=5) {  
+        	            try {  
+        	                Class clazz=Class.forName("android.provider.ContactsContract$Contacts");  
+        	                uri=(Uri)clazz.getField("CONTENT_URI").get(clazz);  
+        	            }  
+        	            catch (Throwable t) {  
+        	                Log.e("reddial", "Exception when determining CONTENT_URI", t);  
+        	            }  
+        	        }  
+        	        else {  
+        	        	uri=Contacts.People.CONTENT_URI;  
+        	        }  
+                    Intent i=new Intent(Intent.ACTION_PICK, uri);  
+                    startActivityForResult(i, STARTPICK_REQUEST);
+        			break;
+        		case ITEM_ID_DELETE:
+//        			String id = ((HashMap) list.getItemAtPosition((int) arg3)).get("ItemID").toString();
+//        			Log.e("debug", id);
+//        			dbBookmarks.deleteTitle(id);
+//        			listItem.remove((int) arg3);
+//        			list.setAdapter(listItemAdapter);
+        			break;
+        		}
+            }
         })
         .create();
 		opDialog.show();
@@ -278,7 +271,7 @@ public class reddial extends Activity implements OnItemClickListener {
 
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			LinearLayout layout = new LinearLayout(reddial.this);
+			LinearLayout layout = new LinearLayout(setdial.this);
 			layout.setOrientation(LinearLayout.VERTICAL);
 
 			String info = mContact.get(position);
@@ -301,17 +294,17 @@ public class reddial extends Activity implements OnItemClickListener {
 		}
 
 		public View addTitleView(Bitmap image, String title) {
-			LinearLayout layout = new LinearLayout(reddial.this);
+			LinearLayout layout = new LinearLayout(setdial.this);
 			layout.setOrientation(LinearLayout.VERTICAL);
 
-			ImageView iv = new ImageView(reddial.this);
+			ImageView iv = new ImageView(setdial.this);
 			iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
 			iv.setLayoutParams(new GridView.LayoutParams(60, 60));
 			iv.setImageBitmap(image);
 
 			layout.addView(iv);
 
-			TextView tv = new TextView(reddial.this);
+			TextView tv = new TextView(setdial.this);
 			// tv.setTransformationMethod(SingleLineTransformationMethod.getInstance());
 			tv.setSingleLine(true);
 			tv.setText(title);
@@ -354,7 +347,7 @@ public class reddial extends Activity implements OnItemClickListener {
 			break;
 		case ITEM_ID_ABOUT:
 			Intent setting = new Intent();
-			setting.setClass(reddial.this, Feedback.class);
+			setting.setClass(setdial.this, Feedback.class);
 			startActivity(setting);
 			break;
 		}
@@ -362,49 +355,5 @@ public class reddial extends Activity implements OnItemClickListener {
 	}
 
 	private NotificationManager mNM;
-
-	private void notification(Context ctx, String msginfo) {
-		try {
-			mNM = (NotificationManager) ctx
-					.getSystemService(Context.NOTIFICATION_SERVICE);
-			Intent intent = new Intent(ctx, reddial.class);
-			CharSequence appName = ctx.getString(R.string.app_name);
-			Notification notification = new Notification(R.drawable.icon,
-					appName, System.currentTimeMillis());
-			notification.flags = Notification.FLAG_NO_CLEAR;
-			CharSequence appDescription = msginfo;
-			notification.setLatestEventInfo(ctx, appName, appDescription,
-					PendingIntent.getActivity(ctx, 0, intent,
-							PendingIntent.FLAG_CANCEL_CURRENT));
-			mNM.notify(0, notification);
-		} catch (Exception e) {
-			mNM = null;
-		}
-	}
-
-	private void initProperty() {
-//		initProperty("java.vendor.url", "java.vendor.url");
-//		initProperty("java.class.path", "java.class.path");
-//		initProperty("user.home", "user.home");
-//		initProperty("java.class.version", "java.class.version");
-//		initProperty("os.version", "os.version");
-//		initProperty("java.vendor", "java.vendor");
-//		initProperty("user.dir", "user.dir");
-//		initProperty("user.timezone", "user.timezone");
-//		initProperty("path.separator", "path.separator");
-//		initProperty("os.name", "os.name");
-//		initProperty("os.arch", "os.arch");
-//		initProperty("line.separator", "line.separator");
-//		initProperty("file.separator", "file.separator");
-//		initProperty("user.name", "user.name");
-//		initProperty("java.version", "java.version");
-//		initProperty("java.home", "java.home");
-//		//机器型号 HTC Magic
-//		Build.MODEL
-//		//SDK版本 8
-//		Build.VERSION.SDK
-//		//SDK版本号 2.2
-//		Build.VERSION.RELEASE		
-	}
 
 }
